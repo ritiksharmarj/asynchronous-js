@@ -77,20 +77,32 @@ getCountryAndNeighbour('India');
 ///////////////////////////////////////
 // Modern way to do AJAX call
 
+const getJSON = (url, errorMessage = 'Something went wrong') => {
+   return fetch(url).then((response) => {
+      if (!response.ok) throw new Error(`${errorMessage} (${response.status})`);
+
+      return response.json();
+   });
+};
+
 const getCountryData = (country) => {
    // Country call
-   fetch(`https://restcountries.com/v3.1/name/${country}?fullText=true`)
-      .then((response) => response.json())
+   getJSON(
+      `https://restcountries.com/v3.1/name/${country}?fullText=true`,
+      'Country not found'
+   )
       .then((data) => {
          renderCountry(data[0]);
          const neighbour = data[0].borders?.[0];
 
-         if (!neighbour) return;
+         if (!neighbour) throw new Error('No neighbour country found!');
 
          // Neighbour call
-         return fetch(`https://restcountries.com/v3.1/alpha/${neighbour}`);
+         return getJSON(
+            `https://restcountries.com/v3.1/alpha/${neighbour}`,
+            'Neighbour country not found'
+         );
       })
-      .then((response) => response.json())
       .then((data) => renderCountry(data[0], 'neighbour'))
       .catch((error) => {
          renderError(
@@ -100,5 +112,5 @@ const getCountryData = (country) => {
 };
 
 btn.addEventListener('click', () => {
-   getCountryData('india');
+   getCountryData('Australia');
 });
