@@ -3,9 +3,7 @@
 const btn = document.querySelector('.btn-country');
 const countriesContainer = document.querySelector('.countries');
 
-///////////////////////////////////////
-
-const renderCountryData = (data, className = '') => {
+const renderCountry = (data, className = '') => {
    const html = `
         <article class="country ${className}">
           <img class="country__img" src="${data.flags.svg}" />
@@ -29,6 +27,9 @@ const renderCountryData = (data, className = '') => {
    countriesContainer.style.opacity = 1;
 };
 
+///////////////////////////////////////
+// Old way to do AJAX call
+/*
 const getCountryAndNeighbour = (country) => {
    // AJAX call for country
    const request = new XMLHttpRequest();
@@ -62,3 +63,18 @@ const getCountryAndNeighbour = (country) => {
 };
 
 getCountryAndNeighbour('India');
+*/
+
+// const request = new XMLHttpRequest();
+// request.open('GET', `https://restcountries.com/v3.1/name/${country}`);
+// request.send();
+
+///////////////////////////////////////
+// Modern way to do AJAX call
+
+const getCountryData = (country) => {
+   fetch(`https://restcountries.com/v3.1/name/${country}?fullText=true`)
+      .then((response) => response.json())
+      .then((data) => renderCountry(data[0]));
+};
+getCountryData('india');
