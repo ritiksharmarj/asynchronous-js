@@ -27,6 +27,11 @@ const renderCountry = (data, className = '') => {
    countriesContainer.style.opacity = 1;
 };
 
+const renderError = (errorMessage) => {
+   countriesContainer.insertAdjacentText('beforeend', errorMessage);
+   countriesContainer.style.opacity = 1;
+};
+
 ///////////////////////////////////////
 // Old way to do AJAX call
 /*
@@ -86,6 +91,14 @@ const getCountryData = (country) => {
          return fetch(`https://restcountries.com/v3.1/alpha/${neighbour}`);
       })
       .then((response) => response.json())
-      .then((data) => renderCountry(data[0], 'neighbour'));
+      .then((data) => renderCountry(data[0], 'neighbour'))
+      .catch((error) => {
+         renderError(
+            `Something went wrong 💥💥💥 ${error.message}. Try again!`
+         );
+      });
 };
-getCountryData('india');
+
+btn.addEventListener('click', () => {
+   getCountryData('india');
+});
