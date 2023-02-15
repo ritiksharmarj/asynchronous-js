@@ -76,7 +76,7 @@ getCountryAndNeighbour('India');
 
 ///////////////////////////////////////
 // Modern way to do AJAX call
-
+/*
 const getJSON = (url, errorMessage = 'Something went wrong') => {
    return fetch(url).then((response) => {
       if (!response.ok) throw new Error(`${errorMessage} (${response.status})`);
@@ -114,3 +114,64 @@ const getCountryData = (country) => {
 btn.addEventListener('click', () => {
    getCountryData('Australia');
 });
+*/
+
+/*
+const lotteryPromise = new Promise(function (resolve, reject) {
+   // do something
+   console.log('Lottery draw is happening 🔮');
+   setTimeout(() => {
+      if (Math.random() >= 0.5) {
+         resolve('You WIN 💰');
+      } else {
+         reject(new Error('You lost your money 💩'));
+      }
+   }, 2000);
+});
+
+lotteryPromise
+   .then((response) => console.log(response))
+   .catch((error) => console.error(error));
+*/
+
+///////////////////////////////////////
+// Promisifying the Geolocation API
+const getPosition = () => {
+   return new Promise((resolve, reject) => {
+      // navigator.geolocation.getCurrentPosition(
+      //    (position) => resolve(position),
+      //    (error) => reject(error)
+      // );
+      navigator.geolocation.getCurrentPosition(resolve, reject);
+   });
+};
+
+///////////////////////////////////////
+// Async/Await
+const whereAmI = async () => {
+   try {
+      // Geolocation
+      const position = await getPosition();
+      const { latitude: lat, longitude: lng } = position.coords;
+
+      // Reverse geocoding
+      const responseGeo = await fetch(
+         `https://geocode.xyz/${lat},${lng}?geoit=json`
+      );
+      if (!responseGeo.ok) throw new Error('Geocode not found.');
+      const dataGeo = await responseGeo.json();
+
+      // Country data
+      const response = await fetch(
+         `https://restcountries.com/v3.1/name/${dataGeo.country}?fullText=true`
+      );
+      if (!response.ok) throw new Error('Country not found.');
+      const data = await response.json();
+      renderCountry(data[0]);
+   } catch (error) {
+      console.log(error);
+      renderError(`Something went wrong 💥 ${error.message}`);
+   }
+};
+
+whereAmI();
